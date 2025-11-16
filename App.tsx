@@ -12,10 +12,12 @@ import { SettingsPage } from './pages/SettingsPage';
 import { VolunteersPage } from './pages/VolunteersPage';
 import { DonorPortalPage } from './pages/DonorPortalPage';
 import { AboutPage } from './pages/AboutPage';
+import { LoginPage } from './pages/LoginPage';
 import type { InventoryItem, ShelterNeed, Activity, UsageDataPoint, Volunteer, Donor, DonationSubmission, Message, ManagerProfile } from './types';
 
 type Page = 'Dashboard' | 'Inventory' | 'Donors' | 'Beneficiaries' | 'Reports' | 'Matches' | 'Volunteers' | 'Settings' | 'About';
 type UserRole = 'manager' | 'donor';
+type AuthenticatedUser = { role: 'manager', profile: ManagerProfile } | { role: 'donor', profile: Donor };
 
 // Mock Data moved to App level to be shared across pages
 const MOCK_INVENTORY: InventoryItem[] = [
@@ -142,6 +144,23 @@ const pageAnimationKeyframes = `
   box-shadow: 0 0 15px 0px rgba(var(--glow-color), 0.5);
 }
 
+/* Animations for login page background */
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+.animate-blob {
+  animation: blob 8s infinite;
+}
+.animation-delay-2000 {
+  animation-delay: -2s;
+}
+.animation-delay-4000 {
+  animation-delay: -4s;
+}
+
 `;
 const styleSheet = document.createElement("style");
 styleSheet.type = "text/css";
@@ -151,7 +170,7 @@ document.head.appendChild(styleSheet);
 
 export const App: React.FC = () => {
     const [activePage, setActivePage] = useState<Page>('Dashboard');
-    const [currentUser, setCurrentUser] = useState<UserRole>('manager');
+    const [authenticatedUser, setAuthenticatedUser] = useState<AuthenticatedUser | null>(null);
     
     const [inventory, setInventory] = useState<InventoryItem[]>(MOCK_INVENTORY);
     const [needs, setNeeds] = useState<ShelterNeed[]>(MOCK_NEEDS);
@@ -160,7 +179,6 @@ export const App: React.FC = () => {
     const [donors, setDonors] = useState<Donor[]>(MOCK_DONORS);
     const [donationSubmissions, setDonationSubmissions] = useState<DonationSubmission[]>(MOCK_SUBMISSIONS);
     const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES);
-    const [selectedDonor, setSelectedDonor] = useState<string>('__REGISTER__');
     const [managerProfile, setManagerProfile] = useState<ManagerProfile>(INITIAL_MANAGER_PROFILE);
     
     const [toast, setToast] = useState<ToastProps | null>(null);
@@ -229,6 +247,33 @@ export const App: React.FC = () => {
 
         showToast('Donation matched! Items added to inventory.', 'success');
     };
+    
+    const handleLogin = (role: UserRole, id: string, password?: string) => {
+        if (role === 'manager') {
+            // Mock validation: check email and password
+            if (id === INITIAL_MANAGER_PROFILE.email && password === 'password') {
+                setAuthenticatedUser({ role: 'manager', profile: managerProfile });
+                showToast(`Welcome back, ${managerProfile.name}!`, 'success');
+            } else {
+                showToast('Invalid manager credentials.', 'error');
+            }
+        } else { // role === 'donor'
+            const donor = donors.find(d => d.id === id);
+            if (donor) {
+                setAuthenticatedUser({ role: 'donor', profile: donor });
+                showToast(`Welcome back, ${donor.name}!`, 'success');
+            } else {
+                showToast('Login failed: Donor not found.', 'error');
+            }
+        }
+    };
+    
+    const handleLogout = () => {
+        if (authenticatedUser) {
+            showToast(`You have been logged out, ${authenticatedUser.profile.name}.`, 'info');
+            setAuthenticatedUser(null);
+        }
+    };
 
     const handleCreateDonor = (donorData: Omit<Donor, 'id'>) => {
         const newDonor: Donor = {
@@ -237,29 +282,18 @@ export const App: React.FC = () => {
         };
         setDonors(prev => [newDonor, ...prev]);
         showToast('Registration successful! Welcome to SABR.', 'success');
-        setSelectedDonor(newDonor.name); // Automatically log in the new donor
+        handleLogin('donor', newDonor.id); // Automatically log in the new donor
     };
     
     const handleUpdateDonor = (updatedDonor: Donor) => {
         setDonors(prev => prev.map(d => d.id === updatedDonor.id ? updatedDonor : d));
+        if (authenticatedUser?.role === 'donor' && authenticatedUser.profile.id === updatedDonor.id) {
+            setAuthenticatedUser({ role: 'donor', profile: updatedDonor });
+        }
         showToast('Donor profile updated!', 'success');
     };
 
-    const renderPage = () => {
-        if (currentUser === 'donor') {
-            const currentDonor = donors.find(d => d.name === selectedDonor);
-            return <DonorPortalPage 
-                        selectedDonor={selectedDonor} 
-                        donorId={currentDonor?.id || ''}
-                        donationSubmissions={donationSubmissions}
-                        setDonationSubmissions={setDonationSubmissions}
-                        activities={activities}
-                        messages={messages}
-                        showToast={showToast}
-                        onCreateDonor={handleCreateDonor}
-                        allNeeds={needs}
-                    />;
-        }
+    const renderManagerPage = () => {
         switch (activePage) {
             case 'Dashboard':
                 return <DashboardPage 
@@ -292,21 +326,41 @@ export const App: React.FC = () => {
                 return <div>Page not found</div>;
         }
     };
+    
+    if (!authenticatedUser) {
+        return (
+            <>
+                <LoginPage onLogin={handleLogin} donors={donors} onCreateDonor={handleCreateDonor} />
+                {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
+            </>
+        );
+    }
+    
+    const { role, profile } = authenticatedUser;
 
     return (
         <div className="flex h-screen bg-stone-50 dark:bg-gray-900 text-gray-900 dark:text-gray-300 font-sans">
-            {currentUser === 'manager' && <Sidebar activePage={activePage} setActivePage={setActivePage} />}
+            {role === 'manager' && <Sidebar activePage={activePage} setActivePage={setActivePage} />}
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Header 
-                    currentUser={currentUser} 
-                    setCurrentUser={setCurrentUser} 
-                    donors={donors} 
-                    selectedDonor={selectedDonor} 
-                    setSelectedDonor={setSelectedDonor}
-                    managerProfile={managerProfile}
+                    userProfile={profile}
+                    userRole={role}
+                    onLogout={handleLogout}
                 />
-                <main key={currentUser === 'manager' ? activePage : `${selectedDonor}-${activePage}`} className="flex-1 overflow-x-hidden overflow-y-auto bg-stone-50 dark:bg-gray-900 animate-page-fade-in">
-                    {renderPage()}
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-stone-50 dark:bg-gray-900 animate-page-fade-in">
+                    {role === 'manager' ? (
+                        renderManagerPage()
+                    ) : (
+                        <DonorPortalPage 
+                            donor={profile as Donor}
+                            donationSubmissions={donationSubmissions}
+                            setDonationSubmissions={setDonationSubmissions}
+                            activities={activities}
+                            messages={messages}
+                            showToast={showToast}
+                            allNeeds={needs}
+                        />
+                    )}
                 </main>
             </div>
             {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}

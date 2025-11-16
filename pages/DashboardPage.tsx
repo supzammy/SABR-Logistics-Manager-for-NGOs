@@ -5,6 +5,7 @@ import { PredictiveChart } from '../components/PredictiveChart';
 import { Modal } from '../components/Modal';
 import { AiRecommendations } from '../components/AiRecommendations';
 import { MatchingPreviewModal } from '../components/MatchingPreviewModal';
+import { DonationSuggestionModal } from '../components/DonationSuggestionModal';
 import type { InventoryItem, ShelterNeed, Activity, UsageDataPoint, DonationSubmission, AiMatch } from '../types';
 
 interface DashboardPageProps {
@@ -165,6 +166,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
     const [matchingItem, setMatchingItem] = useState<InventoryItem | null>(null);
     const [matchingSubmission, setMatchingSubmission] = useState<DonationSubmission | null>(null);
     const [matchToPreview, setMatchToPreview] = useState<AiMatch | null>(null);
+    const [isDonationSuggestionModalOpen, setIsDonationSuggestionModalOpen] = useState(false);
     
     const totalBeneficiaries = new Set(needs.map(n => n.shelterName)).size;
     const confirmedMatchesCount = activities.filter(a => a.type === 'match').length;
@@ -178,14 +180,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Dashboard</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                <DashboardCard glowColor="249, 115, 22" title="Pending Donations" value={String(pendingSubmissions.length)} description="Awaiting matching">
-                    {pendingSubmissions.length > 0 && (
-                        <div className="absolute top-4 right-4 flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
-                        </div>
-                    )}
-                </DashboardCard>
+                <DashboardCard 
+                    glowColor="5, 150, 105"
+                    title="Suggest Donations"
+                    value="AI Ideas"
+                    description="Get smart donation suggestions"
+                    onClick={() => setIsDonationSuggestionModalOpen(true)}
+                />
                 <DashboardCard 
                     glowColor="234, 179, 8"
                     title="Warehouse Capacity" 
@@ -314,6 +315,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     onConfirmMatch={onConfirmMatch}
                 />
             )}
+            <DonationSuggestionModal
+                isOpen={isDonationSuggestionModalOpen}
+                onClose={() => setIsDonationSuggestionModalOpen(false)}
+                needs={needs}
+            />
         </div>
     );
 };

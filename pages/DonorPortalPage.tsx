@@ -9,7 +9,6 @@ import { DonationTracker } from '../components/DonationTracker';
 import { MessageFeed } from '../components/MessageFeed';
 import { DonationCategoryChart } from '../components/DonationCategoryChart';
 import { DonationTrendChart } from '../components/DonationTrendChart';
-import { DonorProfileForm } from '../components/DonorProfileForm';
 import { DonationSuggestionModal } from '../components/DonationSuggestionModal';
 import { EmptyState } from '../components/EmptyState';
 import { DonorLevelProgress } from '../components/DonorLevelProgress';
@@ -17,14 +16,12 @@ import { ImpactMap } from '../components/ImpactMap';
 
 
 interface DonorPortalPageProps {
-  selectedDonor: string;
-  donorId: string;
+  donor: Donor;
   donationSubmissions: DonationSubmission[];
   setDonationSubmissions: React.Dispatch<React.SetStateAction<DonationSubmission[]>>;
   activities: Activity[];
   messages: Message[];
   showToast: (message: string, type: 'success' | 'error' | 'info') => void;
-  onCreateDonor: (donorData: Omit<Donor, 'id'>) => void;
   allNeeds: ShelterNeed[];
 }
 
@@ -247,14 +244,12 @@ const ImpactTab: React.FC<{
 
 
 export const DonorPortalPage: React.FC<DonorPortalPageProps> = ({ 
-    selectedDonor, 
-    donorId,
+    donor,
     donationSubmissions,
     setDonationSubmissions,
     activities,
     messages,
     showToast,
-    onCreateDonor,
     allNeeds,
 }) => {
   const [activeTab, setActiveTab] = useState<DonorTab>('Overview');
@@ -264,9 +259,9 @@ export const DonorPortalPage: React.FC<DonorPortalPageProps> = ({
   const [selectedSubmission, setSelectedSubmission] = useState<DonationSubmission | null>(null);
 
   const donorSubmissions = useMemo(() => {
-    return donationSubmissions.filter(s => s.donorId === donorId)
+    return donationSubmissions.filter(s => s.donorId === donor.id)
       .sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [donationSubmissions, donorId]);
+  }, [donationSubmissions, donor.id]);
   
   const donorImpact = useMemo(() => {
     const deliveredSubmissions = donorSubmissions.filter(s => s.status === 'Delivered');
@@ -301,7 +296,7 @@ export const DonorPortalPage: React.FC<DonorPortalPageProps> = ({
     const deliveredSubmissions = donorSubmissions.filter(s => s.status === 'Delivered');
     const produceDonated = deliveredSubmissions.flatMap(s => s.items).filter(i => i.category === 'Food' && (i.name.toLowerCase().includes('apple') || i.name.toLowerCase().includes('orange') || i.name.toLowerCase().includes('tomato'))).reduce((sum, i) => sum + i.quantity, 0);
     const pantryDonated = deliveredSubmissions.flatMap(s => s.items).filter(i => i.category === 'Food' && (i.name.toLowerCase().includes('canned') || i.name.toLowerCase().includes('pasta'))).reduce((sum, i) => sum + i.quantity, 0);
-    const pledgesMade = activities.filter(a => a.type === 'pledge' && a.description.startsWith(selectedDonor));
+    const pledgesMade = activities.filter(a => a.type === 'pledge' && a.description.startsWith(donor.name));
 
     return [
       { id: 'first_donation', name: 'First Donation', description: 'Make your first donation.', unlocked: deliveredSubmissions.length > 0, icon: 'gift' },
@@ -310,7 +305,7 @@ export const DonorPortalPage: React.FC<DonorPortalPageProps> = ({
       { id: 'pantry_packer', name: 'Pantry Packer', description: 'Donate over 200 pantry items.', unlocked: pantryDonated > 200, icon: 'award' },
       { id: 'urgent_responder', name: 'Urgent Responder', description: 'Fulfill a high-priority need.', unlocked: pledgesMade.length > 0, icon: 'heart' },
     ];
-  }, [donorSubmissions, activities, selectedDonor]);
+  }, [donorSubmissions, activities, donor.name]);
   
   const getAchievementProgress = (achievement: Achievement): number => {
     if (achievement.unlocked) return 100;
@@ -398,7 +393,7 @@ export const DonorPortalPage: React.FC<DonorPortalPageProps> = ({
     const newSubmission: DonationSubmission = {
       ...submissionData,
       id: `sub${Date.now()}`,
-      donorId: donorId,
+      donorId: donor.id,
       status: 'Pending Review',
       createdAt: new Date().toISOString()
     };
@@ -411,16 +406,6 @@ export const DonorPortalPage: React.FC<DonorPortalPageProps> = ({
       setSelectedSubmission(submission);
       setIsReceiptModalOpen(true);
   };
-
-  if (selectedDonor === '__REGISTER__') {
-      return (
-          <div className="p-8 bg-stone-50 dark:bg-gray-800 min-h-full">
-              <div className="max-w-4xl mx-auto">
-                  <DonorProfileForm onSave={onCreateDonor} />
-              </div>
-          </div>
-      );
-  }
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -436,7 +421,7 @@ export const DonorPortalPage: React.FC<DonorPortalPageProps> = ({
   };
   
   const isNewDonor = donorImpact.totalDonations <= 1;
-  const greeting = isNewDonor ? `Let's Get Started, ${selectedDonor}!` : `Welcome Back, ${selectedDonor}!`;
+  const greeting = isNewDonor ? `Let's Get Started, ${donor.name}!` : `Welcome Back, ${donor.name}!`;
   const subGreeting = isNewDonor ? "Ready to make your first big impact? We're glad you're here." : "Your continued support is making a huge difference in our community.";
 
 
@@ -528,7 +513,7 @@ export const DonorPortalPage: React.FC<DonorPortalPageProps> = ({
             isOpen={isReceiptModalOpen}
             onClose={() => setIsReceiptModalOpen(false)}
             submission={selectedSubmission}
-            donorName={selectedDonor}
+            donorName={donor.name}
         />
       )}
     </div>
