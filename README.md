@@ -1,4 +1,5 @@
 # 🌟 SABR Logistics Manager for NGOs
+<img width="1435" height="751" alt="Screenshot 2025-11-17 at 1 29 27 AM" src="https://github.com/user-attachments/assets/efb0aba8-73ed-487a-a571-0cf07b352e41" />
 
 > **Smart Aid & Benefit Resource Management** - A comprehensive logistics dashboard designed to streamline food donation management for NGOs, connecting donors with beneficiaries efficiently.
 
@@ -73,13 +74,22 @@ SABR Logistics Manager is a modern, full-featured dashboard application designed
 ## 📸 Screenshots
 
 ### Dashboard Overview
+<img width="1435" height="751" alt="Screenshot 2025-11-17 at 1 29 27 AM" src="https://github.com/user-attachments/assets/9985be23-3cf1-4c7a-89b0-140d96355717" />
+
 *Real-time metrics, recent activities, and AI-powered match recommendations*
 
 ### Inventory Management
+<img width="1430" height="752" alt="Screenshot 2025-11-17 at 1 29 40 AM" src="https://github.com/user-attachments/assets/8ba408ea-6d5d-4204-9884-c27a475a8e54" />
+
 *Comprehensive item tracking with expiry alerts and donor attribution*
 
 ### Donor Portal
+<img width="1429" height="748" alt="Screenshot 2025-11-17 at 1 36 30 AM" src="https://github.com/user-attachments/assets/fcd64b24-27b7-4f33-9371-b45da71148e7" />
 *Dedicated interface for donors to track their impact and submit donations*
+
+<img width="1431" height="666" alt="Screenshot 2025-11-17 at 1 37 24 AM" src="https://github.com/user-attachments/assets/e916583a-3c73-4f47-ae5e-fd934e8060b7" />
+<img width="1429" height="666" alt="Screenshot 2025-11-17 at 1 37 15 AM" src="https://github.com/user-attachments/assets/7fb2b36f-79d6-4543-97cb-51a8f3c7e5cf" />
+<img width="1434" height="694" alt="Screenshot 2025-11-17 at 1 37 04 AM" src="https://github.com/user-attachments/assets/bfe8f79d-6964-4e4d-949a-003eaf82fbea" />
 
 ---
 
