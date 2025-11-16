@@ -1,0 +1,7 @@
+{
+  "name": "SABR Logistics Dashboard",
+  "description": "A smart logistics dashboard for NGOs that automates inventory management, intelligently matches donations to needs, and tracks impact, helping to reduce waste and increase efficiency.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
