@@ -7,6 +7,9 @@
 [![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2.0-646CFF?logo=vite)](https://vitejs.dev/)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?logo=vercel)](https://sabr-ngo-logestics-manager.vercel.app/)
+
+🌐 **[View Live Demo →](https://sabr-ngo-logestics-manager.vercel.app/)**
 
 ---
 

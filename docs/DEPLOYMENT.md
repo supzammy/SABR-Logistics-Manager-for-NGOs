@@ -17,6 +17,11 @@ This guide covers deploying SABR Logistics Manager to various hosting platforms.
 
 ## Quick Deploy
 
+### 🌐 Live Demo
+
+The application is currently deployed and running at:
+**[https://sabr-ngo-logestics-manager.vercel.app/](https://sabr-ngo-logestics-manager.vercel.app/)**
+
 ### One-Click Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/supzammy/SABR-Logistics-Manager-for-NGOs)
