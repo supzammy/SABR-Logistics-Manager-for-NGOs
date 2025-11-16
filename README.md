@@ -3,6 +3,8 @@
 
 > **Smart Aid & Benefit Resource Management** - A comprehensive logistics dashboard designed to streamline food donation management for NGOs, connecting donors with beneficiaries efficiently.
 
+> https://sabr-ngo-logestics-manager.vercel.app/
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-3178C6?logo=typescript)](https://www.typescriptlang.org/)
