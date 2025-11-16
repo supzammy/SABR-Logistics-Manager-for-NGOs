@@ -1,13 +1,8 @@
 import type { InventoryItem, ShelterNeed, AiMatch, DonationSuggestion } from '../types';
 
-// AI integration placeholder. The real provider import/initialization has been left commented
-// so this repo can run without requiring an API key during review or demo.
-// import { GoogleGenAI, Type } from "@google/genai";
-// const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-
 /**
  * Generates intelligent, data-driven matching recommendations based on inventory and needs.
- * This mock service simulates an AI by applying a set of logical rules to prioritize matches.
+ * This mock service applies logical rules to prioritize matches.
  */
 export const generateMatchingRecommendations = async (inventory: InventoryItem[], needs: ShelterNeed[]): Promise<AiMatch[]> => {
     console.log("AI feature enabled: Returning dynamic mock recommendations.");
